@@ -1,6 +1,6 @@
 var canvas = document.getElementById("main");
-canvas.width = document.body.clientWidth;
-canvas.height = document.body.clientHeight;
+canvas.width = 700;
+canvas.height = 500;
 canvas.style.width = canvas.width + "px";
 canvas.style.height = canvas.height + "px";
 
@@ -12,6 +12,7 @@ Game.fps = 60;
 Game.Gravity = 10;
 
 Art = {};
+
 
 KeysDown = {
 	a: false,
@@ -84,6 +85,18 @@ Art.DrawCircle = function(c){
 	ctx.stroke();
 };
 
+Art.Rect = function(x,y,w,h){
+	this.x = x;
+	this.y = y;
+	this.w = w;
+	this.h = h;
+}
+
+Art.DrawRect = function(c){
+	ctx.rect(c.x,c.y,c.w,c.h);
+	ctx.stroke();
+}
+
 var Player = new Art.Circle(100,100,40);
 Player.Jumping = false;
 Player.Standing = false;
@@ -91,6 +104,8 @@ Player.MaxJump = 25;
 Player.Jump = 0;
 Player.Morphing = false;
 Player.Change = 0;
+Player.minSize = 40; //Both should be divisible by 5
+Player.maxSize = 120;
 Player.requestJump = function(){
 	if (Player.Standing){
 		Player.Standing = false;
@@ -98,21 +113,25 @@ Player.requestJump = function(){
 		Player.Jumping = true;
 	};
 };
+var Platform = new Art.Rect(0,(canvas.height-25), canvas.width, 50);
 Player.requestMorph = function(){
 	if(!Player.Morphing){
 		Player.Morphing = true;
-		if(Player.r == 40){
+		if(Player.r == Player.minSize){
 			Player.Change = 5;
 		}else{
 			Player.Change = -5;
 		}
 	}
 }
-Art.DrawCircle(Player)
+Art.DrawCircle(Player);
+Art.DrawRect(Platform);
 
 Game.main = function(){
 	if(!Game.paused){
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	Art.DrawRect(Platform);
+	
 	if(Player.Jumping){
 		Player.y += -Player.Jump;
 		Player.Jump = Player.Jump - 1;
@@ -120,9 +139,9 @@ Game.main = function(){
 			Player.Jumping = false;
 		}
 	}else{
-		if((Player.y+Player.r)>=(canvas.height)){
+		if((Player.y+Player.r)>=(Platform.y)){
 			Player.yv = 0;
-			Player.y = canvas.height-Player.r
+			Player.y = Platform.y-Player.r
 			Player.Standing = true;
 		}
 		else{
@@ -133,12 +152,12 @@ Game.main = function(){
 	if(Player.Morphing){
 		if(Player.Change == 5){
 			Player.r += Player.Change
-			if(Player.r == 120){
+			if(Player.r == Player.maxSize){
 				Player.Morphing = false;
 			}
 		}else{
 			Player.r += Player.Change
-			if(Player.r == 40){
+			if(Player.r == Player.minSize){
 				Player.Morphing = false;
 			}
 		}
