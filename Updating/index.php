@@ -7,7 +7,7 @@
 		<script>
 			var Counter = document.getElementsByClassName("counter")[0];
 			var Game = {
-				FPS: 60,
+				FPS: 1,
 				Paused: false,
 				Count: 0,
 			};
@@ -24,7 +24,6 @@
 
 			//This creates the loop
 			Game._intervalId = setInterval(Game.update, (1000/Game.FPS))
-
 		</script>
 	</body>
 </html>
