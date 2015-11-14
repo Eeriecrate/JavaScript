@@ -3,11 +3,11 @@
 		<title>Keydown</title>
 	</head>
 	<body>
-		<p>KeyCode: <span id = "text" style = "color: red"></span></p>
+		<p>KeyCode: <span class = "keycode text" style = "color: red"></span></p>
 		<script src = "../lib/jquery.js"></script>
 		<script>
 			$(document).keydown(function(key){
-				$("#text").text(key.keyCode);
+				$(".keycode.text").text(key.keyCode);
 			});
 		</script>
 	</body>
