@@ -76,10 +76,11 @@ $(document).keyup(function(key){
 	}
 });
 
-Art.Circle = function(x,y,r){
+Art.Circle = function(x,y,r,canCollide){
 	this.x = x;
 	this.y = y;
 	this.r = r;
+	this.canCollide = canCollide;
 	this.Type = "Circle"
 	this.yv = null;
 	if(!this == Player){
@@ -92,11 +93,12 @@ Art.DrawCircle = function(c){
 	ctx.arc(c.x,c.y,c.r,0,Math.PI*2);
 };
 
-Art.Rect = function(x,y,w,h){
+Art.Rect = function(x,y,w,h,canCollide){
 	this.x = x;
 	this.y = y;
 	this.w = w;
 	this.h = h;
+	this.canCollide = canCollide;
 	this.Type = "Rect";
 	Objects.push(this);
 }
@@ -115,7 +117,7 @@ Art.DrawObjects = function(){
 }
 
 
-var Player = new Art.Circle(100,100,40);
+var Player = new Art.Circle(100,100,40,true);
 Player.Jumping = false;
 Player.Standing = false;
 Player.MaxJump = 25;
@@ -143,17 +145,19 @@ Player.requestMorph = function(){
 }
 
 //CreateObjects
-var Platform = new Art.Rect(50,(canvas.height-25), canvas.width, 50);
-var P1 = new Art.Rect(200,Platform.y-50,150,50);
-var P2 = new Art.Rect(400,150,150,50);
+var Platform = new Art.Rect(50,(canvas.height-25), canvas.width, 50,true);
+var P1 = new Art.Rect(200,Platform.y-50,150,50,true);
+var P2 = new Art.Rect(400,150,150,50,true);
 //EndCreation
 
 
 Player.isStanding = function(){
 	for(var i = 0; i < Objects.length; i++){
-		if((Player.y+Player.r)>=(Objects[i].y) && !((Player.y)>(Objects[i].y)) && (Player.x+Player.r > (Objects[i].x)) && (Player.x-Player.r < (Objects[i].x + Objects[i].w)) ){
-			Player.y = Objects[i].y-Player.r
-			return true;
+		if(Objects[i].canCollide){
+			if((Player.y+Player.r)>=(Objects[i].y) && !((Player.y)>(Objects[i].y)) && (Player.x+Player.r > (Objects[i].x)) && (Player.x-Player.r < (Objects[i].x + Objects[i].w)) ){
+				Player.y = Objects[i].y-Player.r
+				return true;
+			}
 		}
 	}
 }
@@ -161,25 +165,31 @@ Player.isStanding = function(){
 
 Player.isOnLeft = function(){
 	for(var i = 0; i < Objects.length; i++){
-		if((Player.x + Player.r) >= (Objects[i].x) && (Player.x - Player.r) <= (Objects[i].x) && !((Player.y - Player.r) >= (Objects[i].y + Objects[i].h)) && !((Player.y + Player.r) <= (Objects[i].y))){
-			Player.x = Objects[i].x - Player.r
-			return true;
+		if(Objects[i].canCollide){
+			if((Player.x + Player.r) >= (Objects[i].x) && (Player.x - Player.r) <= (Objects[i].x) && !((Player.y - Player.r) >= (Objects[i].y + Objects[i].h)) && !((Player.y + Player.r) <= (Objects[i].y))){
+				Player.x = Objects[i].x - Player.r
+				return true;
+			}
 		}
 	}
 }
 
 Player.isOnRight = function(){
 	for(var i = 0; i < Objects.length; i++){
-		if((Player.x - Player.r <= (Objects[i].x + Objects[i].w)) && !(Player.x + Player.r < Objects[i].x) && !((Player.y - Player.r) >= (Objects[i].y + Objects[i].h)) && !((Player.y + Player.r) <= (Objects[i].y))){
-			return true;
+		if(Objects[i].canCollide){
+			if((Player.x - Player.r <= (Objects[i].x + Objects[i].w)) && !(Player.x + Player.r < Objects[i].x) && !((Player.y - Player.r) >= (Objects[i].y + Objects[i].h)) && !((Player.y + Player.r) <= (Objects[i].y))){
+				return true;
+			}
 		}
 	}
 }
 
 Player.isUnder = function(){
 	for(var i = 0; i < Objects.length; i++){
-		if((Player.y-Player.r)<=(Objects[i].y + Objects[i].h) && !((Player.y)<(Objects[i].y)) && (Player.x+Player.r > (Objects[i].x)) && (Player.x-Player.r < (Objects[i].x + Objects[i].w)) ){	
-			return true;
+		if(Objects[i].canCollide){
+			if((Player.y-Player.r)<=(Objects[i].y + Objects[i].h) && !((Player.y)<(Objects[i].y)) && (Player.x+Player.r > (Objects[i].x)) && (Player.x-Player.r < (Objects[i].x + Objects[i].w)) ){	
+				return true;
+			}
 		}
 	}
 }
