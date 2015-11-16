@@ -117,14 +117,14 @@ Art.DrawObjects = function(){
 }
 
 
-var Player = new Art.Circle(100,100,40,true);
+var Player = new Art.Circle(100,0,40,true);
 Player.Jumping = false;
 Player.Standing = false;
 Player.MaxJump = 25;
 Player.Jump = 0;
 Player.Morphing = false;
 Player.Change = 0;
-Player.minSize = 40; //Both should be divisible by 5
+Player.minSize = 5; //Both should be divisible by 5
 Player.maxSize = 120;
 Player.requestJump = function(){
 	if (Player.Standing){
@@ -144,10 +144,16 @@ Player.requestMorph = function(){
 	}
 }
 
+
 //CreateObjects
-var Platform = new Art.Rect(50,(canvas.height-25), canvas.width, 50,true);
+var Platform = new Art.Rect(0,(canvas.height-25), 800, 50,true);
+Platform.min = 0;
+Platform.max = Platform.w;
+Platform.Speed = -1;
 var P1 = new Art.Rect(200,Platform.y-50,150,50,true);
-var P2 = new Art.Rect(400,150,150,50,true);
+for(var i = 100;i < 475; i += 25){
+var P2 = new Art.Rect(i,i,25,25,true);
+};
 //EndCreation
 
 
@@ -178,6 +184,7 @@ Player.isOnRight = function(){
 	for(var i = 0; i < Objects.length; i++){
 		if(Objects[i].canCollide){
 			if((Player.x - Player.r <= (Objects[i].x + Objects[i].w)) && !(Player.x + Player.r < Objects[i].x) && !((Player.y - Player.r) >= (Objects[i].y + Objects[i].h)) && !((Player.y + Player.r) <= (Objects[i].y))){
+				Player.x = Objects[i].x + Objects[i].w + Player.r;
 				return true;
 			}
 		}
@@ -196,7 +203,13 @@ Player.isUnder = function(){
 Game.main = function(){
 	if(!Game.paused){
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	
+	if(Platform.w == Platform.min){
+		Platform.Speed = 1;
+	}
+	if(Platform.w == Platform.max){
+		Platform.Speed = -1;
+	}
+	Platform.w += Platform.Speed;
 	if(Player.Jumping){
 		if(!Player.isUnder()){
 			Player.y += -Player.Jump;
